@@ -1,0 +1,104 @@
+﻿#admin-vehicle__add-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+}
+
+fieldset.add-form__fieldset {
+    border-bottom: 3px solid gray;
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+}
+
+fieldset.add-form__fieldset:last-of-type {
+    border-bottom: none;
+}
+
+.edit-delete-btns {
+    margin-bottom: 1em;
+}
+
+.add-form__input-group {
+    margin-bottom: 1em;
+}
+
+.field-validation-error {
+    color: red;
+}
+
+.thumbnails__thumbnail {
+    display: block;
+    max-width: 50%;
+    aspect-ratio: 4/3;
+    background-position: center center;
+    background-size: cover;
+}
+.thumbnails__thumbnail:not(:checked) {
+    opacity: 0.7;
+    filter: blur(1px);
+}
+.thumbnails__thumbnail:hover {
+    cursor: pointer;
+}
+.thumbnails__thumbnail:focus {
+    outline: 0;
+    border: none;
+}
+
+
+@media(min-width: 750px)
+{
+    #admin-vehicle__add-form {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 3em;
+        margin-bottom: 3em;
+    }
+
+    fieldset.add-form__fieldset {
+        border: 1px solid #dee2e6;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1em;
+        justify-content: center;
+        align-items: center;
+        
+    }
+    fieldset.add-form__fieldset:last-of-type {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    fieldset.add-form__fieldset legend {
+        width: auto;
+        float: none;
+        grid-column: -1 /1;
+    }
+
+    fieldset.add-form__fieldset div {
+        flex-grow: 1;
+        min-width: 40%;
+    }
+
+    .edit-delete-btns {
+        grid-column: -1 / 1;
+        width: 50%;
+        justify-self: center;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 1em;
+    }
+
+    .add-form__input-group {
+        margin-bottom: 0;
+    }
+
+    .add-form__thumbnails {
+        display: flex;
+        flex-wrap: wrap;
+        flex-basis: 100%;
+    }
+    .add-form__thumbnails > div {
+        flex-basis: 100%;
+    }
+}

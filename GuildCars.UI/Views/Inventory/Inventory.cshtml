@@ -1,0 +1,337 @@
+﻿@model GuildCars.UI.Models.InventoryInfoViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutNoNav.cshtml";
+}
+@section styles {
+    <link href="@Url.Content("~/Content/themes/base/all.css")" rel="stylesheet"/>
+}
+
+<div class="alert alert-dismissible alert-success fade show d-none delete-vehicle-success-container" role="alert">
+    <strong>Success! </strong><span class="delete-vehicle-success-message"></span>
+    <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<div class="container inventory-container">
+    <aside class="sidebar">
+        <button type="button" class="btn find-cars-btn mb-3">Find Cars</button>
+        <section class="sidebar__price mb-3">
+            <h4>Price</h4>
+            <div class="d-flex justify-content-between align-items-center mb-5 flex-md-column">
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" id="price" class="form-control" aria-label="Lowest price of vehicles displayed" />
+                </div>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" id="high-price" class="form-control" aria-label="Highest price of vehicles displayed" />
+                </div>
+            </div>
+            <div id="slider-3"></div>
+        </section>
+        <section class="sidebar__vehicleCondition mb-3">
+            <h4>Vehicle Condition</h4>
+            <div class="form-check vehicle-condition-checkbox">
+                <input class="form-check-input" type="checkbox" value="new" id="new" checked="@Model.VehicleConditionsSelected.Contains("new")" />
+                <label class="form-check-label" for="new">New</label>
+            </div>
+            <div class="form-check vehicle-condition-checkbox">
+                <input class="form-check-input" type="checkbox" value="used" id="used" checked="@Model.VehicleConditionsSelected.Contains("used")" />
+                <label class="form-check-label" for="used">Used</label>
+            </div>
+        </section>
+        <section class="sidebar__bodyStyle mb-3">
+            <h4>Body Style</h4>
+            @for (int i = 0; i < Model.VehicleOptions.BodyStyles.Count; i++)
+            {
+                <div class="form-check bodystyle-checkbox">
+                    <input class="form-check-input" type="checkbox" value="@Model.VehicleOptions.BodyStyles[i].Item1" id="@Model.VehicleOptions.BodyStyles[i].Item2" />
+                    <label class="form-check-label" for="@Model.VehicleOptions.BodyStyles[i].Item2">@Model.VehicleOptions.BodyStyles[i].Item2</label>
+                </div>
+            }
+        </section>
+        <section class="sidebar__makes mb-3">
+            <h4>Makes</h4>
+            @for (int i = 0; i < Model.VehicleOptions.Makes.Count; i++)
+            {
+                <div class="form-check make-checkbox">
+                    <input class="form-check-input" type="checkbox" value="@Model.VehicleOptions.Makes[i].Item1" id="@Model.VehicleOptions.Makes[i].Item2" />
+                    <label class="form-check-label" for="@Model.VehicleOptions.Makes[i].Item2">@Model.VehicleOptions.Makes[i].Item2</label>
+                </div>
+            }
+        </section>
+        <section class="sidebar__models mb-3">
+            <h4>Models</h4>
+            @for (int i = 0; i < Model.VehicleOptions.Models.Count; i++)
+            {
+                <div class="form-check model-checkbox">
+                    <input class="form-check-input" type="checkbox" value="@Model.VehicleOptions.Models[i].Item1" id="@Model.VehicleOptions.Models[i].Item2" />
+                    <label class="form-check-label" for="@Model.VehicleOptions.Models[i].Item2">@Model.VehicleOptions.Models[i].Item2</label>
+                </div>
+            }
+        </section>
+        <section class="sidebar__transmissions mb-3">
+            <h4>Transmissions</h4>
+            @for (int i = 0; i < Model.VehicleOptions.Transmissions.Count; i++)
+            {
+                <div class="form-check transmission-checkbox">
+                    <input class="form-check-input" type="checkbox" value="@Model.VehicleOptions.Transmissions[i].Item1" id="@Model.VehicleOptions.Transmissions[i].Item2" />
+                    <label class="form-check-label" for="@Model.VehicleOptions.Transmissions[i].Item2">@Model.VehicleOptions.Transmissions[i].Item2</label>
+                </div>
+            }
+        </section>
+    </aside>
+
+    <main class="container">
+        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+        {
+            @Html.ActionLink("Add a New Vehicle", "AddVehicle", "Admin")
+        }
+        <div class="car-cards-container"></div>
+    </main>
+</div>
+
+
+@section scripts {
+    <script>
+        class Workflow {
+            constructor() {
+                this._selectedVehicleConditions = [];
+                this._selectedTransmissions = [];
+                this._selectedModels = [];
+                this._selectedMakes = [];
+                this._selectedBodyStyles = [];
+                this._currentPage = 1;
+
+                @foreach (var vehicleCondition in Model.VehicleConditionsSelected)
+                {
+                    @:this._selectedVehicleConditions.push("@vehicleCondition");
+                }
+
+                this.initSlider();
+                this.cacheDom();
+                this.initEventListeners();
+                this.getFilterValuesFromStorage();
+                this.displayDeleteVehicleMessage();
+            }
+
+            getFilterValuesFromStorage() {
+                const currentFilter = this.getCurrentFilter();
+
+                if (sessionStorage.getItem(currentFilter) !== null) {
+                    const { vehicleConditionsSelected,
+                        transmissionTypesSelected, modelsSelected, makesSelected, bodyStylesSelected, minPrice, maxPrice } = JSON.parse(sessionStorage.getItem(currentFilter));
+
+                    this._selectedVehicleConditions = vehicleConditionsSelected ?? [];
+                    this._selectedTransmissions = transmissionTypesSelected ?? [];
+                    this._selectedModels = modelsSelected ?? [];
+                    this._selectedMakes = makesSelected ?? [];
+                    this._selectedBodyStyles = bodyStylesSelected ?? [];
+                    this._currentPage = 1;
+
+                    this.prefillCheckboxes();
+                }
+            }
+
+            getCurrentFilter() {
+                const splitUrl = window.location.href.split("/");
+                const endpoint = splitUrl[splitUrl.length - 1];
+                return `${endpoint}Filter`;
+            }
+
+            prefillCheckboxes() {
+                this._transmissionCheckboxes.forEach(c => {
+                    if (this._selectedTransmissions.includes(c.value)) {
+                        c.setAttribute("checked", true);
+                    }
+                });
+
+                this._modelCheckboxes.forEach(c => {
+                    if (this._selectedModels.includes(c.value)) {
+                        c.setAttribute("checked", true);
+                    }
+                });
+
+                this._makeCheckboxes.forEach(c => {
+                    if (this._selectedMakes.includes(c.value)) {
+                        c.setAttribute("checked", true);
+                    }
+                });
+
+                this._bodyStyleCheckboxes.forEach(c => {
+                    if (this._selectedBodyStyles.includes(c.value)) {
+                        c.setAttribute("checked", true);
+                    }
+                });
+            }
+
+            initSlider() {
+                $(function () {
+                    $("#slider-3").slider({
+                        range: true,
+                        min: 0,
+                        max: 100000,
+                        step: 1000,
+                        values: [@Model.MinPrice, @Model.MaxPrice],
+                        slide: function (event, ui) {
+                            $("#price").val(ui.values[0]);
+                            $("span.ui-slider-handle:first-of-type").attr("dollarAmount", ui.values[0] / 1000 + "k");
+
+                            $("#high-price").val(ui.values[1]);
+                            $("span.ui-slider-handle:last-of-type").attr("dollarAmount", ui.values[1] / 1000 + "k");
+                        }
+                    });
+
+                    $("#price").val($("#slider-3").slider("values", 0));
+                    $("span.ui-slider-handle:first-of-type").attr("dollarAmount", $("#slider-3").slider("values", 0) / 1000 + "k");
+
+                    $("#high-price").val($("#slider-3").slider("values", 1));
+                    $("span.ui-slider-handle:last-of-type").attr("dollarAmount", $("#slider-3").slider("values", 1) / 1000 + "k");
+                });
+            }
+            cacheDom() {
+                this._deleteVehicleContainer = document.querySelector(".delete-vehicle-success-container");
+                this._deleteVehicleMessage = document.querySelector(".delete-vehicle-success-message");
+                this._vehicleConditionCheckboxes = document.querySelectorAll(".vehicle-condition-checkbox");
+                this._transmissionCheckboxes = document.querySelectorAll(".transmission-checkbox");
+                this._modelCheckboxes = document.querySelectorAll(".model-checkbox");
+                this._makeCheckboxes = document.querySelectorAll(".make-checkbox");
+                this._bodyStyleCheckboxes = document.querySelectorAll(".bodystyle-checkbox");
+                this._priceSlider = document.querySelector("#slider-3");
+                this._minPrice = document.querySelector("#price");
+                this._maxPrice = document.querySelector("#high-price");
+                this._submitBtn = document.querySelector(".sidebar button.btn.find-cars-btn");
+                this._carCardsContainer = document.querySelector(".car-cards-container");
+            }
+
+
+            initEventListeners() {
+                this._vehicleConditionCheckboxes.forEach(c => c.addEventListener("change", e => {
+                    if (this._selectedVehicleConditions.includes(e.target.value)) {
+                        const index = this._selectedVehicleConditions.indexOf(e.target.value);
+                        this._selectedVehicleConditions.splice(index, 1);
+                    }
+                    else {
+                        this._selectedVehicleConditions.push(e.target.value);
+                    }
+                }));
+
+                this._transmissionCheckboxes.forEach(c => c.addEventListener("change", e => {
+                    if (this._selectedTransmissions.includes(e.target.value)) {
+                        const index = this._selectedTransmissions.indexOf(e.target.value);
+                        this._selectedTransmissions.splice(index, 1);
+                    }
+                    else {
+                        this._selectedTransmissions.push(e.target.value);
+                    }
+                }));
+
+                this._modelCheckboxes.forEach(c => c.addEventListener("change", e => {
+                    if (this._selectedModels.includes(e.target.value)) {
+                        const index = this._selectedModels.indexOf(e.target.value);
+                        this._selectedModels.splice(index, 1);
+                    }
+                    else {
+                        this._selectedModels.push(e.target.value);
+                    }
+                }));
+
+                this._makeCheckboxes.forEach(c => c.addEventListener("change", e => {
+                    if (this._selectedMakes.includes(e.target.value)) {
+                        const index = this._selectedMakes.indexOf(e.target.value);
+                        this._selectedMakes.splice(index, 1);
+                    }
+                    else {
+                        this._selectedMakes.push(e.target.value);
+                    }
+                }));
+
+                this._bodyStyleCheckboxes.forEach(c => c.addEventListener("change", e => {
+                    if (this._selectedBodyStyles.includes(e.target.value)) {
+                        const index = this._selectedBodyStyles.indexOf(e.target.value);
+                        this._selectedBodyStyles.splice(index, 1);
+                    }
+                    else {
+                        this._selectedBodyStyles.push(e.target.value);
+                    }
+                }));
+
+                this._submitBtn.addEventListener("click", async e => {
+                    e.preventDefault();
+                    await this.fetchCars();
+                })
+            }
+
+            async fetchCars() {
+                const args = {
+                    minPrice: this._minPrice.value,
+                    maxPrice: this._maxPrice.value,
+                    bodyStylesSelected: this._selectedBodyStyles,
+                    transmissionTypesSelected: this._selectedTransmissions,
+                    modelsSelected: this._selectedModels,
+                    makesSelected: this._selectedMakes,
+                    vehicleConditionsSelected: this._selectedVehicleConditions
+                }
+
+                sessionStorage.setItem(this.getCurrentFilter(), JSON.stringify(args));
+
+                try {
+                    const response = await fetch("https://localhost:44346/inventory/filter?page=1", {
+                        method: "POST",
+                        headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(args)
+                    });
+
+                    if (response.ok) {
+                        const data = await response.text();
+                        this._carCardsContainer.innerHTML = data;
+                        this.addEventListenersToCards();
+                    }
+                    else {
+                        throw new Exception(response.statusText);
+                    }
+                }
+                catch (ex) {
+                    alert("Unable to retrieve vehicles - please try again later. ", ex.message);
+                }
+            }
+
+            addEventListenersToCards() {
+                this._carCards = document.querySelectorAll(".vehicle-overview-card");
+
+                this._carCards.forEach(c => c.addEventListener("click", e => {
+
+                    @{
+                        string redirectUrl;
+                        if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            redirectUrl = "https://localhost:44346/Admin/EditVehicle";
+                        }
+                        else
+                        {
+                            redirectUrl = "https://localhost:44346/Inventory/Details";
+                        }
+                    }
+                    const url = `@redirectUrl/${e.currentTarget.dataset.id}`;
+                    document.location.href = url;
+                }));
+            }
+
+            displayDeleteVehicleMessage() {
+                const message = sessionStorage.getItem("DeleteVehicleSuccessMessage");
+                if (message) {
+                    this._deleteVehicleMessage.textContent = message;
+                    this._deleteVehicleContainer.classList.remove("d-none");
+                    sessionStorage.removeItem("DeleteVehicleSuccessMessage");
+                }
+            }
+
+        }
+
+        window.addEventListener("load", async () => {
+            const workflow = new Workflow();
+            await workflow.fetchCars();
+        })
+    </script>    
+}

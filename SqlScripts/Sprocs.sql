@@ -1,0 +1,44 @@
+USE GCEF;
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+		   WHERE ROUTINE_NAME = 'DeleteVehicleById')
+	DROP PROCEDURE DeleteVehicleById;
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+		   WHERE ROUTINE_NAME = 'DeleteSaleById')
+	DROP PROCEDURE DeleteSaleById;
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+			WHERE ROUTINE_NAME = 'GetDetailsForVehicle')
+	DROP PROCEDURE GetDetailsForVehicle;
+GO
+
+CREATE PROCEDURE DeleteVehicleById (@Id INT) AS
+BEGIN
+	DELETE FROM ImagePaths
+	WHERE VehicleId = @Id;
+
+	DELETE FROM VehicleDetails
+	WHERE Vehicle_Id = @Id;
+
+	DELETE FROM Vehicles
+	WHERE Id = @Id;
+END
+GO
+
+CREATE PROCEDURE DeleteSaleById (@Id INT) AS
+BEGIN
+	DELETE FROM SaleRecords
+	WHERE Id = @Id;
+END
+GO
+
+CREATE PROCEDURE GetDetailsForVehicle (@Id INT) AS
+BEGIN
+	SELECT d.Id, d.Type, d.Name, d.Description, d.IsKeyFeature FROM Details d
+	INNER JOIN VehicleDetails vd ON vd.Detail_Id = d.Id
+	WHERE vd.Vehicle_Id = @Id;
+END

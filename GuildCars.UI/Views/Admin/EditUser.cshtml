@@ -1,0 +1,170 @@
+﻿@model GuildCars.UI.Models.UserDetails
+@{
+    ViewBag.Title = "EditUser";
+    Layout = "~/Views/Shared/_LayoutNoNav.cshtml";
+}
+
+<main class="container">
+    <h2>Edit User</h2>
+    @using (Html.BeginForm("EditUser", "Admin", FormMethod.Post, new { @class = "container" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+        <div>
+            @Html.LabelFor(m => m.FirstName)
+            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.FirstName)
+        </div>
+        <div>
+            @Html.LabelFor(m => m.LastName)
+            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.LastName)
+        </div>
+        <div>
+            @Html.LabelFor(m => m.Email)
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Email)
+        </div>
+        <div>
+            @Html.LabelFor(m => m.NewPassword)
+            @Html.PasswordFor(m => m.NewPassword, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.NewPassword)
+        </div>
+        <div>
+            @Html.LabelFor(m => m.ConfirmPassword)
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.ConfirmPassword)
+        </div>
+        <div>
+            @Html.LabelFor(m => m.Roles)
+            @Html.ListBoxFor(m => m.SelectedRoles, new MultiSelectList(Model.Roles, "Id", "Name", Model.PreSelectedRoles), new { @class = "form-control" })
+        </div>
+
+        <div class="list-group">
+            <h5>Owned Vehicles</h5>
+            @if (Model.VehiclesOwned.Count() == 0)
+            {
+                <p>-- No vehicles owned --</p>
+            }
+            @foreach (var vehicle in Model.VehiclesOwned)
+            {
+                <a 
+                   href="#" 
+                   class="list-group-item list-group-item-action"
+                   data-bs-toggle="modal" 
+                   data-bs-target="#vehicle-details"
+                   data-vehicle-id="@vehicle.Id"
+                >
+                    @vehicle.Year - @vehicle.Model.Make.Name @vehicle.Model.Name (VIN: @vehicle.VIN)
+                </a>
+            }
+        </div>
+        <button type="submit" class="btn btn-success">Save User</button>
+    }
+
+</main>
+
+<div class="modal fade" id="vehicle-details" tabindex="-1" aria-labelledby="vehicle-details-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="vehicle-details-label">Vehicle Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body vehicle-details__modal-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><span class="vehicle-modal__label">YEAR:</span><span class="vehicle-modal__value" id="vehicle-modal__year"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">MAKE:</span><span class="vehicle-modal__value" id="vehicle-modal__make"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">MODEL:</span><span class="vehicle-modal__value" id="vehicle-modal__model"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">VIN:</span><span class="vehicle-modal__value" id="vehicle-modal__VIN"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">EXTERIOR:</span><span class="vehicle-modal__value" id="vehicle-modal__exterior"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">INTERIOR:</span><span class="vehicle-modal__value" id="vehicle-modal__interior"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">BODY:</span><span class="vehicle-modal__value" id="vehicle-modal__body-style"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">TRANSMISSION:</span><span class="vehicle-modal__value" id="vehicle-modal__transmission"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">ENGINE:</span><span class="vehicle-modal__value" id="vehicle-modal__engine"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">HWY:</span><span class="vehicle-modal__value" id="vehicle-modal__highway-mpg"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">CTY:</span><span class="vehicle-modal__value" id="vehicle-modal__city-mpg"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">MSRP:</span><span class="vehicle-modal__value" id="vehicle-modal__msrp"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">PRICE:</span><span class="vehicle-modal__value" id="vehicle-modal__sale-price"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">NEW:</span><span class="vehicle-modal__value" id="vehicle-modal__is-new"></span></li>
+                    <li class="list-group-item"><span class="vehicle-modal__label">DESCRIPTION:</span><span class="vehicle-modal__value" id="vehicle-modal__description"></span></li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary edit-vehicle-btn">Edit Vehicle Details</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        class Workflow {
+            constructor() {
+                this.cacheDom();
+                this.initEventListeners();
+                this._currencyFormatter = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+                this._vehiclesOwned = [];
+                @foreach (var vehicle in Model.VehiclesOwned)
+                {
+                    @:this._vehiclesOwned.push(@Html.Raw(Json.Encode(vehicle)));
+                }
+            }
+
+            cacheDom() {
+                this._vehicleListItems = document.querySelectorAll(".list-group-item");
+                this._vehicleModalTitle = document.querySelector("#vehicle-details-label");
+
+                this._year = document.querySelector("#vehicle-modal__year");
+                this._make = document.querySelector("#vehicle-modal__make");
+                this._model = document.querySelector("#vehicle-modal__model");
+                this._vin = document.querySelector("#vehicle-modal__VIN");
+                this._exterior = document.querySelector("#vehicle-modal__exterior");
+                this._interior = document.querySelector("#vehicle-modal__interior");
+                this._bodyStyle = document.querySelector("#vehicle-modal__body-style");
+                this._transmission = document.querySelector("#vehicle-modal__transmission");
+                this._engine = document.querySelector("#vehicle-modal__engine");
+                this._highwayMpg = document.querySelector("#vehicle-modal__highway-mpg");
+                this._cityMpg = document.querySelector("#vehicle-modal__city-mpg");
+                this._msrp = document.querySelector("#vehicle-modal__msrp");
+                this._salePrice = document.querySelector("#vehicle-modal__sale-price");
+                this._isNew = document.querySelector("#vehicle-modal__is-new");
+                this._description = document.querySelector("#vehicle-modal__description");
+
+                this._editBtn = document.querySelector(".edit-vehicle-btn");
+            }
+
+            initEventListeners() {
+                Array.from(this._vehicleListItems).forEach(v => {
+                    v.addEventListener("click", e => {
+                        const vehicleId = e.target.dataset.vehicleId;
+                        const vehicle = this._vehiclesOwned.find(v => v.Id == vehicleId);
+
+                        this._year.textContent = vehicle.Year;
+                        this._make.textContent = vehicle.Model.Make.Name;
+                        this._model.textContent = vehicle.Model.Name;
+                        this._vin.textContent = vehicle.VIN;
+                        this._exterior.textContent = vehicle.Color;
+                        this._interior.textContent = vehicle.Interior;
+                        this._bodyStyle.textContent = vehicle.BodyStyle.Name;
+                        this._transmission.textContent = vehicle.TransmissionType.Name;
+                        this._engine.textContent = vehicle.Engine;
+                        this._highwayMpg.textContent = `${vehicle.HighwayMpg} mpg`;
+                        this._cityMpg.textContent = `${vehicle.CityMpg} mpg`;
+                        this._msrp.textContent = this._currencyFormatter.format(vehicle.MSRP);
+                        this._salePrice.textContent = this._currencyFormatter.format(vehicle.SalePrice);
+                        this._isNew.textContent = vehicle.IsNew ? "Yes" : "No";
+                        this._description.textContent = vehicle.Description.substring(0, 30);
+
+                        this._editBtn.addEventListener("click", () => {
+                            document.location.href = `https://localhost:44346/Admin/EditVehicle/${vehicleId}`;
+                        });
+                    });
+                });
+            }
+        }
+
+        const workflow = new Workflow();
+    </script>
+}

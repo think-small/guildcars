@@ -1,0 +1,73 @@
+﻿@model IEnumerable<GuildCars.Models.Vehicle>
+
+
+<div class="card">
+    <h5 class="card-title">Vehicles Available for Trade In</h5>
+    @if (Model.Count() == 0)
+    {
+        <p class="card-body">No vehicles available for trade in.</p>
+    }
+    else
+    {
+        <select class="form-select-lg mb-3 trade-in-select" aria-label=".form-select-lg">
+            <option value="" disabled selected>-- Select a Vehicle --</option>
+            @foreach (var vehicle in Model)
+            {
+                <option 
+                    value="@vehicle.Id"
+                    data-bs-toggle="modal"
+                    data-bs-target="#tradeInModal"
+                    data-bs-make="@vehicle.Model.Make.Name"
+                    data-bs-model="@vehicle.Model.Name"
+                    data-bs-year="@vehicle.Year"
+                    data-bs-mileage="@vehicle.Mileage"
+                    data-bs-msrp="@vehicle.MSRP"
+                    data-bs-tradein-value="@vehicle.SalePrice"
+                    data-bs-color="@vehicle.Color">
+                    @vehicle.Model.Make.Name @vehicle.Model.Name, @vehicle.Year (@vehicle.SalePrice.ToString("C"))
+                </option>
+            }
+        </select>
+    }
+</div>
+
+<div class="modal fade" id="tradeInModal" tabindex="-1" aria-labelledby="tradeInValueLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h5 class="modal-title" id="tradeInValueLabel">Trade In Vehicle</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="mb-3">
+                    <label for="tradein-make" class="col-form-label">Make: </label>
+                    <input type="text" class="form-control" id="tradein-make" />
+                </div>
+                <div class="mb-3">
+                    <label for="tradein-model" class="col-form-label">Model: </label>
+                    <input type="text" class="form-control" id="tradein-model" />
+                </div>
+                <div class="mb-3">
+                    <label for="tradein-year" class="col-form-label">Year: </label>
+                    <input type="number" class="form-control" id="tradein-year" />
+                </div>
+                <div class="mb-3">
+                    <label for="tradein-color" class="col-form-label">Exterior: </label>
+                    <input type="text" class="form-control" id="tradein-color" />
+                </div>
+                <div class="mb-3">
+                    <label for="tradein-mileage" class="col-form-label">Mileage: </label>
+                    <input type="number" class="form-control" id="tradein-mileage" />
+                </div>
+                <div class="mb-3">
+                    <label for="tradein-msrp" class="col-form-label">MSRP: </label>
+                    <input type="number" class="form-control" id="tradein-msrp" />
+                </div>
+                <div class="mb-3">
+                    <label for="tradein-value" class="col-form-label">Trade In Value: </label>
+                    <input type="number" class="form-control" id="tradein-value" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

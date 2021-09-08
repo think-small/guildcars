@@ -1,0 +1,23 @@
+﻿@model IEnumerable<GuildCars.Models.Vehicle>
+
+<div class="cars-container">
+    @foreach(var vehicle in Model)
+    {
+    <div class="card vehicle-overview-card" data-id="@vehicle.Id">
+        @if (vehicle.ImagePaths.Count > 0)
+        {
+
+            <img src="@Url.Content("~/Images/Cars/" + vehicle.ImagePaths.FirstOrDefault().Path)" class="card-img-top vehicle-overview-card__img" alt="Image of @vehicle.Model.Make.Name @vehicle.Model.Name"/>
+        }
+        else
+        {
+            <img src="@Url.Content("~/Images/Cars/no-photos.png")" class="card-img-top vehicle-overview-card__img" alt="Photos for this vehicle coming soon" />
+        }
+        <div class="container mb-5">
+            <h5 class="card-title">@vehicle.Model.Make.Name @vehicle.Model.Name</h5>
+            <p class="card-text">Mileage: @vehicle.Mileage</p>
+            <p class="card-text">Price: @vehicle.SalePrice.ToString("C")</p>
+        </div>        
+    </div>
+    }
+</div>

@@ -1,0 +1,156 @@
+﻿@{
+    ViewBag.Title = "Guild Cars - Serving Minneapolis Since 1977";
+}
+
+<div id="carouselExampleIndicators" class="carousel slide mb-md-5">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active mustang-carousel-item">
+            <img src="~/Images/Banner/mustang.png" class="d-block w-100 carousel__img" alt="Deals on Ford Mustangs">
+            <div class="carousel__content carousel__content__mustang-content">
+                <h2 class="carousel__mustang-title">Match With Your Mustang</h2>
+                @Html.ActionLink("Shop Now", "Mustang", "Features", null, new { @class = "btn btn-light mustang-cta" })
+            </div>
+        </div>
+        <div class="carousel-item mercedes-carousel-item">
+            <img src="~/Images/Banner/mercedes.png" class="d-block w-100 carousel__img" alt="Featured Mercedes Vehicles">
+            <div class="carousel__content carousel__content__mercedes-content">
+                <h2 class="carousel__mercedes-title">Meet Your Mercedes</h2>
+                @Html.ActionLink("See Deals", "Mercedes", "Features", null, new { @class = "btn btn-light mercedes-cta" })
+            </div>
+        </div>
+        <div class="carousel-item audi-carousel-item">
+            <img src="~/Images/Banner/audi-interior.png" class="d-block w-100 carousel__img" alt="Audi Sales">
+            <div class="carousel__content carousel__content__audi-content">
+                <h2 class="carousel__audi-title">Outrageous Audi Sales</h2>
+                @Html.ActionLink("View Sales", "Audi", "Features", null, new { @class = "btn btn-light audi-cta" })
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<section class="container about-grid d-flex flex-column justify-content-center align-items-center min-vh-100 text-center">
+    <div class="row about-grid__row mb-2 mb-md-0">
+        <div class="col-sm-12">
+            <h2 class="about-grid__title">Affordable<span class="about-grid__accent"> . </span>Quality<span class="about-grid__accent"> . </span> Hassle Free</h2>
+        </div>
+    </div>
+    <div class="row about-grid__row d-flex flex-column flex-md-row align-items-center justify-content-center mb-5 mb-md-2">
+        <div class="col-sm-12 col-md-6 about-grid__content">
+            <h5 class="about-grid__subtitle">Affordable</h5>
+            <p class="about-grid__text">Providing the best deal for customers is what we do best. Our discounted, upfront prices are guaranteed to meet your needs.  Don't lose sleep over finding the best deal in town. If you shop at Guild Cars - you've found it.</p>
+        </div>
+        <div class="col-sm-12 col-md-6 about-grid__img">
+            <img src="~/Images/AboutGrid/woman-in-mustang.jpg" alt="We provide deals that leave you satisfied" />
+        </div>
+    </div>
+    <div class="row about-grid__row d-flex flex-column flex-md-row align-items-center justify-content-center">
+        <div class="col-sm-12 col-md-6 about-grid__img text-end order-last order-md-first">
+            <img src="~/Images/AboutGrid/lexus.jpg" alt="You'll find only high quality vehicles here"/>
+        </div>
+        <div class="col-sm-12 col-md-6 about-grid__content order-first order-md-last">
+            <h5 class="about-grid__subtitle">Quality</h5>
+            <p class="about-grid__text">Every car in our inventory is carefully vetted to ensure you get only the highest quality vehicles. New or pre-owned, you are sure to find an affordable and reliable car with us.</p>
+        </div>
+    </div>
+</section>
+
+<section class="about-cards d-flex justify-content-between align-items-center">
+    <div class="container">
+        <h2 class="about-cards__title">We've Got You Covered</h2>
+        <div class="card about-card">
+            <img src="~/Images/AboutCards/financing.jpg" class="about-card__img" />
+            <div class="card-body">
+                <h5 class="card-title">Easy Financing</h5>
+                <p class="card-text">We offer transparent, straightforward financing to get you on the road quickly.</p>
+            </div>
+        </div>
+        <div class="card about-card">
+            <img src="~/Images/AboutCards/service.jpg" class="about-card__img" />
+            <div class="card-body">
+                <h5 class="card-title">Reliable Service</h5>
+                <p class="card-text">No-compromise, high quality work done quickly every time.</p>
+            </div>
+        </div>
+        <div class="card about-card">
+            <img src="~/Images/AboutCards/warranty.jpg" class="about-card__img"/>
+            <div class="card-body">
+                <h5 class="card-title">Simple Warranty</h5>
+                <p class="card-text">Comprehensive, easy-to-understand base warranties have you covered for life.</p>
+            </div>
+        </div>
+    </div> 
+</section>
+
+@Scripts.Render("~/Content/gsap")
+@section scripts {
+    <script>
+        gsap.registerPlugin(TextPlugin);
+
+        class Workflow {
+            constructor() {
+
+                this._delay = -0.75;
+
+                this.cacheDom();
+                this.initTimelines();
+                this.initEventListener();
+
+                this._mustangTimeline.play(this._delay);
+            }
+
+            cacheDom() {
+                this._carousel = document.querySelector("#carouselExampleIndicators");
+
+                this._mustangTitle = document.querySelector(".carousel__mustang-title");
+                this._mustangCta = document.querySelector(".mustang-cta");
+
+                this._mercedesTitle = document.querySelector(".carousel__mercedes-title");
+                this._mercedesCta = document.querySelector(".mercedes-cta");
+
+                this._audiTitle = document.querySelector(".carousel__audi-title");
+                this._audiCta = document.querySelector(".audi-cta");
+            }
+
+            initTimelines() {
+                this._mustangTimeline = gsap.timeline({ delay: "0.75", paused: true });
+                this._mustangTimeline.from(this._mustangTitle, 1, { x: "-30", autoAlpha: "0", ease: "power2.out" })
+                    .from(this._mustangCta, 1, { x: "-30", autoAlpha: "0", ease: "power2.out" }, "-=0.5");
+
+                this._mercedesTimeline = gsap.timeline({ delay: "0.75", paused: true });
+                this._mercedesTimeline.from(this._mercedesTitle, 1, { y: "-20", autoAlpha: "0", ease: "power2.out" })
+                    .from(this._mercedesCta, 1, { y: "-20", autoAlpha: "0", ease: "power2.out" }, "-=0.7");
+
+                this._audiTimeline = gsap.timeline({ delay: "0.75", paused: true });
+                this._audiTimeline.from(this._audiTitle, 1, { x: "30", autoAlpha: "0", ease: "power2.out" })
+                    .from(this._audiCta, 1, { x: "30", autoAlpha: "0", ease: "power2.out" }, "-=0.7");
+            }
+
+            initEventListener() {
+                this._carousel.addEventListener("slide.bs.carousel", e => {
+                    if (Array.from(e.relatedTarget.classList).includes("mercedes-carousel-item"))
+                        this._mercedesTimeline.play(this._delay);
+                    else if (Array.from(e.relatedTarget.classList).includes("mustang-carousel-item"))
+                        this._mustangTimeline.play(this._delay);
+                    else if (Array.from(e.relatedTarget.classList).includes("audi-carousel-item"))
+                        this._audiTimeline.play(this._delay);
+                });
+            }
+        }
+
+        const workflow = new Workflow();
+
+    </script>    
+}

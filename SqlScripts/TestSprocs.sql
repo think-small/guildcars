@@ -1,0 +1,44 @@
+USE GCEFTest;
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+		   WHERE ROUTINE_NAME = 'GCEFTestDeleteVehicleById')
+	DROP PROCEDURE GCEFTestDeleteVehicleById;
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+		   WHERE ROUTINE_NAME = 'GCEFTestDeleteSaleById')
+	DROP PROCEDURE GCEFTEstDeleteSaleById;
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES
+			WHERE ROUTINE_NAME = 'GCEFTestGetDetailsForVehicle')
+	DROP PROCEDURE GCEFTestGetDetailsForVehicle;
+GO
+
+CREATE PROCEDURE GCEFTestDeleteVehicleById (@Id INT) AS
+BEGIN
+	DELETE FROM ImagePaths
+	WHERE VehicleId = @Id;
+
+	DELETE FROM VehicleDetails
+	WHERE Vehicle_Id = @Id;
+
+	DELETE FROM Vehicles
+	WHERE Id = @Id;
+END
+GO
+
+CREATE PROCEDURE GCEFTestDeleteSaleById (@Id INT) AS
+BEGIN
+	DELETE FROM SaleRecords
+	WHERE Id = @Id;
+END
+GO
+
+CREATE PROCEDURE GCEFTestGetDetailsForVehicle (@Id INT) AS
+BEGIN
+	SELECT d.Id, d.Type, d.Name, d.Description, d.IsKeyFeature FROM Details d
+	INNER JOIN VehicleDetails vd ON vd.Detail_Id = d.Id
+	WHERE vd.Vehicle_Id = @Id;
+END

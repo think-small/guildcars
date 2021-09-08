@@ -1,0 +1,204 @@
+﻿@model GuildCars.UI.Models.AddVehicleViewModel
+@{
+    ViewBag.Title = "AddVehicle";
+    Layout = "~/Views/Shared/_LayoutNoNav.cshtml";
+}
+
+@section styles {
+    <link href="@Url.Content("~/Content/Admin.css" )" rel="stylesheet" />
+}
+
+<div class="container">
+
+    <h2 class="mb-lg-5">Add A New Vehicle</h2>
+    @{
+        if (TempData.ContainsKey("AddVehicleSuccessMessage"))
+        {
+            <div class="alert alert-dismissible alert-success fade show" role="alert">
+                <strong>Success!</strong> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    }
+
+    @using (Html.BeginForm("AddVehicle", "Admin", FormMethod.Post, new { id = "admin-vehicle__add-form", @class = "container", enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <fieldset class="add-form__fieldset container">
+            <legend>Make and Model</legend>
+
+            <div class="add-form__input-group">
+                <label for="make">Make:</label>
+                <select class="form-select make-select">
+                    <option value="" disabled selected>--  Select a Make --</option>
+                    @foreach (var key in Model.MakesAndModels.Keys)
+                    {
+                        <option value="@key.Name">@key.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="add-form__input-group">
+                <label for="model">Model:</label>
+                <select class="form-select model-select" disabled name="Vehicle.ModelId">
+                    <option>--  Select a Make First --</option>
+                </select>
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.TransmissionType)
+                @Html.DropDownListFor(v => v.Vehicle.TransmissionTypeId, Model.TransmissionTypes, new { @class = "form-control" })
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.BodyStyle)
+                @Html.DropDownListFor(v => v.Vehicle.BodyStyleId, Model.BodyStyles, new { @class = "form-control" })
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Engine)
+                @Html.TextBoxFor(v => v.Vehicle.Engine, new { @class = "form-control" })
+                @Html.ValidationMessageFor(v => v.Vehicle.Engine)
+            </div>
+        </fieldset>
+
+        <fieldset class="add-form__fieldset container">
+            <legend>Vehicle Details</legend>
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Year)
+                @Html.TextBoxFor(v => v.Vehicle.Year, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(v => v.Vehicle.Year)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Color)
+                @Html.TextBoxFor(v => v.Vehicle.Color, new { @class = "form-control" })
+                @Html.ValidationMessageFor(v => v.Vehicle.Color)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Interior)
+                @Html.TextBoxFor(v => v.Vehicle.Interior, new { @class = "form-control" })
+                @Html.ValidationMessageFor(v => v.Vehicle.Interior)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Mileage)
+                @Html.TextBoxFor(v => v.Vehicle.Mileage, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(v => v.Vehicle.Mileage)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.HighwayMpg)
+                @Html.TextBoxFor(v => v.Vehicle.HighwayMpg, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(v => v.Vehicle.HighwayMpg)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.CityMpg)
+                @Html.TextBoxFor(v => v.Vehicle.CityMpg, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(v => v.Vehicle.CityMpg)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.VIN)
+                @Html.TextBoxFor(v => v.Vehicle.VIN, new { @class = "form-control" })
+                @Html.ValidationMessageFor(v => v.Vehicle.VIN)
+            </div>
+        </fieldset>
+
+        <fieldset class="add-form__fieldset container">
+            <legend>Pricing Data</legend>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.MSRP)
+                @Html.TextBoxFor(v => v.Vehicle.MSRP, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(v => v.Vehicle.MSRP)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.SalePrice)
+                @Html.TextBoxFor(v => v.Vehicle.SalePrice, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(v => v.Vehicle.SalePrice)
+            </div>
+        </fieldset>
+
+        <fieldset class="add-form__fieldset container">
+            <legend>Marketing Information</legend>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Details)
+                @Html.ListBoxFor(v => v.SelectedDetailIds, Model.Details, new { @class = "form-control", @multiple = true })
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Description)
+                @Html.TextAreaFor(v => v.Vehicle.Description, new { @class = "form-control" })
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.ImagePaths)
+                <input id="@Html.IdFor(v => v.ImageUploads)" name="@Html.NameFor(v => v.ImageUploads)" type="file" multiple class="form-control" />
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.IsNew)
+                @Html.CheckBoxFor(v => v.Vehicle.IsNew)
+                @Html.ValidationMessageFor(v => v.Vehicle.IsNew)
+            </div>
+        </fieldset>
+
+        <button class="btn btn-primary add-form__save-btn">Save Vehicle</button>
+    }
+
+</div>
+
+@section scripts {
+    <script>
+        class Workflow {
+            constructor() {
+                this._selectedMake = null;
+                @{ 
+                    var makesAndModelsDictionary = new Dictionary<string, IList<GuildCars.Models.Model>>();
+                    foreach (var keyValue in Model.MakesAndModels)
+                    {
+                        makesAndModelsDictionary.Add(keyValue.Key.Name, keyValue.Value);
+                    }
+                }
+                this._makesAndModels = @Html.Raw(Json.Encode(makesAndModelsDictionary))
+                this.cacheDom();
+                this.initEventListeners();
+            }
+
+            cacheDom() {
+                this._makeSelect = document.querySelector(".make-select");
+                this._modelSelect = document.querySelector(".model-select");
+            }
+
+            initEventListeners() {
+                this._makeSelect.addEventListener("change", e => {
+                    this._selectedMake = e.target.value;
+                    this._modelSelect.disabled = false;
+                    this.removeOptions();
+                    this.assembleModelSelect();
+                })
+            }
+
+            assembleModelSelect() {
+                const availableModels = this._makesAndModels[this._selectedMake];
+                availableModels.forEach(m => {
+                    const option = document.createElement("option");
+                    option.value = m.Id;
+                    option.text = m.Name;
+                    this._modelSelect.append(option);
+                });
+            }
+
+            removeOptions() {
+                this._modelSelect.innerHTML = "";
+            }
+        }
+
+        const workflow = new Workflow();
+    </script>
+}

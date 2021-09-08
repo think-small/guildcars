@@ -1,0 +1,14 @@
+﻿@model GuildCars.Models.Vehicle
+
+<div class="card">
+    <h6 class="card-title">@Model.Model.Make.Name @Model.Model.Name, @Model.Year</h6>
+    <ul class="card-body">
+        <li>Body: @Model.BodyStyle.Name</li>
+        <li>Exterior Color: @Model.Color</li>
+        <li>Interior Color: @Model.Interior</li>
+        <li>Transmission: @Model.TransmissionType.Name</li>
+        <li>Engine: @Model.Engine</li>
+        <li>Mileage: @Model.Mileage miles</li>
+        <li>Sale Price: @Model.SalePrice.ToString("C")</li>
+    </ul>
+</div>

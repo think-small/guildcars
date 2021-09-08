@@ -1,0 +1,154 @@
+﻿@{
+    ViewBag.Title = "Vehicle Sale";
+    Layout = "~/Views/Shared/_LayoutNoNav.cshtml";
+}
+
+@section styles {
+    <link href="@Url.Content("~/Content/Sale.css" )" rel="stylesheet" />
+}
+<main class="container">
+    <ul class="nav nav-tabs" id="saleTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="customer-info-tab" data-bs-toggle="tab" data-bs-target="#customer-info" type="button" role="tab" aria-controls="customer-info" aria-selected="true">Customer Info</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="trade-in-tab" disabled aria-disabled="true" data-bs-toggle="tab" data-bs-target="#trade-in" type="button" role="tab" aria-controls="trade-in" aria-selected="false">Trade In</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="purchased-vehicle-tab" disabled aria-disabled="true" data-bs-toggle="tab" data-bs-target="#purchased-vehicle" type="button" role="tab" aria-controls="purchased-vehicle" aria-selected="false">Purchased Vehicle</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="transaction-tab" disabled aria-disabled="true" data-bs-toggle="tab" data-bs-target="#transaction" type="button" role="tab" aria-controls="transaction" aria-selected="false">Transaction</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="saleTabsContent">
+        <div class="tab-pane fade show active container" id="customer-info" role="tabpanel" aria-labelledby="customer-info-tab">
+            <div class="customer-info__grid-container">
+                <h5 class="customer-info-subtitle">Search Criteria</h5>
+                <form class="customer-info-form">
+                    <div class="input-group">
+                        <span class="input-group-text" id="first-name-label">First Name</span>
+                        <input type="text" class="form-control" aria-labelledby="first-name-label" />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text" id="last-name-label">Last Name</span>
+                        <input type="text" class="form-control" aria-labelledby="last-name-label" />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text" id="email-label">Email</span>
+                        <input type="text" class="form-control" aria-labelledby="email-label" />
+                    </div>
+                    <button type="button" class="btn btn-primary customer-info-form__btn">Find Customer</button>
+                    @Html.ActionLink("Create New Customer", "Register", "Account")
+                </form>
+                <div class="customer-info-container"></div>
+                <button class="btn btn-success select-customer-btn">Continue With Customer</button>
+            </div>            
+        </div>
+        <div class="tab-pane fade container" id="trade-in" role="tabpanel" aria-labelledby="trade-in-tab">
+            <div class="trade-in-container"></div>
+            <div class="selected-trade-in-details"></div>
+        </div>
+        <div class="tab-pane fade" id="purchased-vehicle" role="tabpanel" aria-labelledby="purchased-vehicle-tab">
+            <div class="purchased-vehicles__container">
+                <div class="available-vehicles-list"></div>
+                <div class="selected-vehicle-details"></div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="transaction" role="tabpanel" aria-labelledby="transaction-tab">
+            <div class="transaction__container">
+                <div class="transaction__customer-info-container">
+                    <div class="card">
+                        <h6 class="card-title">Customer Details</h6>
+                        <div class="card-body">
+                            <p><strong>Name: </strong><span class="transaction-customer-info__name"></span></p>
+                            <p><strong>Email: </strong><span class="transaction-customer-info__email"></span></p>
+                            <p><strong>Phone Number: </strong><span class="transaction-customer-info__phone"></span></p>
+                            <p><strong>Address: </strong><address>
+                                                             <p class="transaction-customer-info__address1"></p>
+                                                             <p class="transaction-customer-info__address2"></p>
+                                                             <p><span class="transaction-customer-info__city"></span>, <span class="transaction-customer-info__state"></span><span class="transaction-customer-info__zip"></span></p>
+                                                          </address>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="transaction__all-vehicle-info-container">
+                    <div class="card">
+                        <h6 class="card-title">Trade In Vehicle</h6>
+                        <div class="card-body">
+                            <p><strong>Make/Model: </strong><span class="transaction-tradein__makemodel"></span></p>
+                            <p><strong>VIN: </strong><span class="transaction-tradein__vin"></span></p>
+                            <p><strong>Value: </strong><span class="transaction-tradein__value"></span></p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h6 class="card-title">Purchasing Vehicle</h6>
+                        <div class="card-body">
+                            <p><strong>Make/Model: </strong><span class="transaction-purchase__makemodel"></span></p>
+                            <p><strong>VIN: </strong><span class="transaction-purchase__vin"></span></p>
+                            <p><strong>Sale Price: </strong><span class="transaction-purchase__saleprice"></span></p>
+                            <p><strong>Balance: </strong><span class="transaction-purchase__balance-after-trade-in"></span></p>
+                        </div>
+                    </div>
+                    <select class="form-select form-select-lg mb-3 transaction__purchase-method-selector" aria-label="Select purchase method">
+                        <option value="" disabled selected>--  Select Purchase Method  --</option>
+                        <option value="cash">Cash</option>
+                        <option value="bank finance">Bank Finance</option>
+                        <option value="dealer finance">Dealer Finance</option>
+                    </select>
+                </div>
+           
+                <div class="cash__container purchase-type-pane">
+                    <div class="mb-3">
+                        <label for="payment-amount">Payment Amount:</label>
+                        <input type="number" id="payment-amount" class="form-control" />
+                    </div>
+                    <button type="button" class="btn btn-primary cash-btn">Process Transaction</button>
+                </div>
+                <div class="bank-finance__container purchase-type-pane">
+                    <div class="mb-3">
+                        <label for="bank-downpayment">Down Payment:</label>
+                        <input type="number" id="bank-downpayment" class="form-control"/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bank-loan-length">Loan Length:</label>
+                        <input type="number" id="bank-loan-length" class="form-control"/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bank-interest-rate">Interest Rate:</label>
+                        <input type="number" id="bank-interest-rate" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="bank-approval-amount">Approval Amount:</label>
+                        <input type="number" id="bank-approval-amount" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="bank-approval-letter">Approval Letter:</label>
+                        <input type="file" id="bank-approval-letter" class="form-control" />
+                    </div>
+                    <button type="button" class="btn btn-primary bank-btn">Process Transaction</button>
+                </div>
+                <div class="dealer-finance__container purchase-type-pane">
+                    <div class="mb-3">
+                        <label for="dealer-downpayment">Down Payment:</label>
+                        <input type="number" id="dealer-downpayment" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="dealer-interest-rate">Interest Rate:</label>
+                        <input type="number" id="dealer-interest-rate" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="dealer-loan-length">Loan Length:</label>
+                        <input type="number" id="dealer-loan-length" class="form-control" />
+                    </div>
+                    <button type="button" class="btn btn-primary dealer-btn">Process Transaction</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section scripts {
+    @Scripts.Render("~/Content/js/Sale.js");
+}

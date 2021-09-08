@@ -1,0 +1,28 @@
+﻿* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    color: blue;
+}
+
+header {
+    font-size: 20px;
+    min-width: 100vw;
+    text-align: center;
+}
+
+.pdf-section {
+    margin-bottom: 3em;
+}
+
+.footer__signature {
+    min-width: 50%;
+    border-bottom: 10px solid black;
+}
+
+small {
+    color: pink;
+}

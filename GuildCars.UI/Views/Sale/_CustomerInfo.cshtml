@@ -1,0 +1,22 @@
+﻿@model GuildCars.UI.Models.CustomerInfoViewModel
+
+<h5 class="customer-info-subtitle">Customer Details</h5>
+<div class="card customer-info-display">
+    <div class="container">
+        @if (Model is null)
+        {
+            <p>No customer found - try again or create new customer.</p>
+        }
+        else
+        {
+            @Html.HiddenFor(c => c.Id, new { @class = "customer-info__id" })
+            <p class="customer-info__name-display">@Model.FirstName @Model.LastName</p>
+            <p class="customer-info__email-display">@Model.Email</p>
+            <address>
+                <p class="customer-info__address1-display">@Model.Address1</p>
+                <p class="customer-info__address2-display">@Model.Address2</p>
+                <p class="customer-info__city-state-zip-display">@Model.City, @Model.State @Model.ZipCode</p>
+            </address>
+        }
+    </div>    
+</div>

@@ -1,0 +1,76 @@
+﻿@using Microsoft.AspNet.Identity;
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/gsap")
+    @Scripts.Render("~/bundles/modernizr")
+    @RenderSection("styles", required: false)
+
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="navbar-text navbar-logo">
+                Guild Cars
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="new-cars-nav-link" role="button" data-bs-toggle="dropdown" aria-expanded="false">Vehicles</a>
+                    <ul class="dropdown-menu" aria-labelledby="new-cars-nav-link">
+                        <li><a href="https://localhost:44346/inventory/new" class="dropdown-item">New Vehicles</a></li>
+                        <li><a href="https://localhost:44346/inventory/used" class="dropdown-item">Used Vehicles</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a href="#">Test Drive</a></li>
+                @if (Request.IsAuthenticated)
+                {
+                    <li class="nav-item"><a href="#">Schedule Service</a></li>
+                }
+                <li class="nav-item"><a href="#">About Us</a></li>
+                <li class="nav-item"><a href="#">Login</a></li>
+            </ul>
+            
+        </div>
+    </nav>
+    @RenderBody()
+
+    <footer class="footer">
+        <div class="container d-flex justify-content-between align-ittems-baseline">
+            <div class="footer__info">
+                <h3>Affordable . Quality . Hassle Free</h3>
+                <address>
+                    <div>Guild Cars</div>
+                    <div>12345 Best Cars Lane</div>
+                    <div>Minneapolis, MN 55318</div>
+                </address>
+            </div>
+            <div class="footer__links">
+                <ul class="footer__link-container">
+                    <li>Inventory</li>
+                    <li><a href="#">New Vehicles</a></li>
+                    <li><a href="#">Used Vehicles</a></li>
+                    <li><a href="#">Featured Specials</a></li>
+                </ul>
+                <ul class="footer__link-container">
+                    <li>About Us</li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Our Values</a></li>
+                    <li><a href="#">Careers</a></li>
+                </ul>
+            </div>
+        </div>        
+    </footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

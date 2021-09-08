@@ -1,0 +1,9 @@
+﻿@model IEnumerable<GuildCars.Models.Vehicle>
+
+<select class="form-select form-select-lg mb-3 available-vehicles__select" arial-label="Available vehicles">
+    <option value="" disabled selected>--  Select a Vehicle --</option>
+    @foreach (var vehicle in Model)
+    {
+        <option value="@vehicle.Id">@vehicle.Model.Make.Name @vehicle.Model.Name, @vehicle.Year (VIN: @vehicle.VIN)</option>
+    }
+</select>

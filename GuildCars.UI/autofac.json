@@ -1,0 +1,21 @@
+{
+  "defaultAssembly": "GuildCars.Data",
+  "components": [
+    {
+      "type": "GuildCars.Data.VehicleRepository, GuildCars.Data",
+      "services": [
+        {
+          "type": "GuildCars.Data.IVehicleRepository, GuildCars.Data"
+        }
+      ]
+    },
+    {
+      "type": "GuildCars.Data.SaleRepository, GuildCars.Data",
+      "services": [
+        {
+          "type":  "GuildCars.Data.ISaleRepository, GuildCars.Data"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,321 @@
+﻿@model GuildCars.Models.Vehicle
+@using GuildCars.Models
+
+@{
+    Layout = "~/Views/Shared/_LayoutNoNav.cshtml";
+    ViewBag.Title = $"{Model.Model.Make.Name} {Model.Model.Name} {Model.Year}";
+}
+@section styles{
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+} 
+
+<main class="container">
+    <section class="vehicle-img-carousels">
+        <div id="vehicle-img-main-carousel" class="carousel slide" data-interval="false">
+            @if (Model.ImagePaths.Count > 0)
+            {
+                <div class="carousel-inner">
+                    @{ var imgIndex = 0; }
+                    @foreach (var img in Model.ImagePaths)
+                    {
+                        <div class="carousel-item @(imgIndex == 0 ? "active" : "")">
+                            <img data-index="@imgIndex" class="d-block w-100 vehicle-img-main-carousel__img" src="@Url.Content("~/Images/Cars/" + img.Path)" alt="Image for @Model.Model.Make.Name @Model.Model.Name" />
+                        </div>
+                        imgIndex++;
+                    }
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#vehicle-img-main-carousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#vehicle-img-main-carousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            }
+            else
+            {
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img class="d-block w-100 vehicle-img-main-carousel__img" src="@Url.Content("~/Images/Cars/no-photos.png")" alt="No photos available yet for @Model.Model.Make.Name @Model.Model.Name @Model.Year" />
+                    </div>
+                </div>
+            }
+        </div>
+        <div id="vehicle-img-secondary-carousel">
+            @{ var index = 0; }
+            @foreach (var img in Model.ImagePaths)
+            {
+                <img class="img-thumbnail vehicle-img-secondary-carousel__thumbnail @(index == 0 ? "active" : "")" src="@Url.Content("~/Images/Cars/" + img.Path)" alt="Thumbnail for @Model.Model.Make.Name @Model.Model.Name" data-index="@index" />
+                index++;
+            }
+        </div>
+    </section>
+
+    <section class="basic-info">
+        <h3>@Model.Model.Make.Name @Model.Model.Name @Model.Year</h3>
+        <div class="basic-info__container">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                    <div class="d-inline-block"><strong>EXTERIOR:</strong></div>
+                    <div>@Model.Color</div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <div class="d-inline-block"><strong>INTERIOR:</strong></div>
+                    <div class="d-inline-block">@Model.Interior</div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <div class="d-inline-block"><strong>ENGINE:</strong></div>
+                    <div class="d-inline-block">@Model.Engine</div>
+                </li>
+            </ul>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                    <div class="d-inline-block"><strong>VIN:</strong></div>
+                    <div class="d-inline-block">@Model.VIN</div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <div class="d-inline-block"><strong>TRANSMISSION:</strong></div>
+                    <div class="d-inline-block">@Model.TransmissionType.Name</div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <div class="d-inline-block"><strong>FUEL EFFICIENCY:</strong></div>
+                    <div class="d-inline-block">@Model.HighwayMpg Hwy / @Model.CityMpg City</div>
+                </li>
+            </ul>
+        </div>        
+    </section>
+
+    <section class="description">
+        <h3>Description</h3>
+        <p>@Model.Description</p>
+    </section>
+    
+
+    @{
+        var accumulator = new Dictionary<DetailType, List<List<Detail>>>
+{
+        { DetailType.Interior, new List<List<Detail>> { new List<Detail>(), new List<Detail>() }},
+        { DetailType.Exterior, new List<List<Detail>> { new List<Detail>(), new List<Detail>() }},
+        { DetailType.Entertainment, new List<List<Detail>> { new List<Detail>(), new List<Detail>() }},
+        { DetailType.Mechanical, new List<List<Detail>> { new List<Detail>(), new List<Detail>()} },
+        { DetailType.Safety, new List<List<Detail>> { new List<Detail>(), new List<Detail>() }},
+        { DetailType.TechSpecs, new List<List<Detail>> { new List<Detail>(), new List<Detail>() }}
+    };
+        var detailsDict = Model.Details.Aggregate(accumulator, (Dictionary<DetailType, List<List<Detail>>> acc, Detail curr) =>
+        {
+            var firstList = accumulator[curr.Type][0];
+            var secondList = accumulator[curr.Type][1];
+
+            if (firstList.Count > secondList.Count)
+            {
+                secondList.Add(curr);
+            }
+            else
+            {
+                firstList.Add(curr);
+            }
+            return accumulator;
+        });
+
+    }
+    <section class="vehicle-details">
+        <h3>Vehicle Details</h3>
+        <div class="vehicle-details__container d-flex justify-content-center align-items-center">
+            <div class="accordion" id="vehicle-details-accordion">
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="vehicle-details-accordion__header-one">
+                        <button class="accordion-button vehicle-detail-accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#interior-collapse" aria-expanded="false" aria-controls="interior-collapse">
+                            Interior <i class="bi bi-key ps-2"></i>
+                        </button>
+                    </h3>
+                    <div id="interior-collapse" class="accordion-collapse collapse show" aria-labelledby="vehicle-details-accordion__header-one" data-bs-parent="#vehicle-details-accordion">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                @foreach (var detail in detailsDict[DetailType.Interior][0])
+                                {
+                                    <li class="list-group-item">@detail.Description</li>
+                                }
+                            </ul>
+                            <ul class="list-group">
+                                @foreach (var detail in detailsDict[DetailType.Interior][1])
+                                {
+                                    <li class="list-group-item">@detail.Description</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="vehicle-details-accordion__header-two">
+                        <button class="accordion-button vehicle-detail-accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#exterior-collapse" aria-expanded="false" aria-controls="exterior-collapse">
+                            Exterior <i class="bi bi-truck ps-2"></i>
+                        </button>
+                    </h3>
+                    <div id="exterior-collapse" class="accordion-collapse collapse" aria-labelledby="vehicle-details-accordion__header-two" data-bs-parent="#vehicle-details-accordion">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                @foreach (var detail in detailsDict[DetailType.Exterior][0])
+                                {
+                                    <li class="list-group-item">@detail.Description</li>
+                                }
+                            </ul>
+                            <ul class="list-group">
+                                @foreach (var detail in detailsDict[DetailType.Exterior][1])
+                                {
+                                    <li class="list-group-item">@detail.Description</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="vehicle-details-accordion__header-three">
+                        <button class="accordion-button vehicle-detail-accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#entertainment-collapse" aria-expanded="false" aria-controls="entertainment-collapse">
+                            Entertainment <i class="bi bi-display ps-2"></i>
+                        </button>
+                    </h3>
+                    <div id="entertainment-collapse" class="accordion-collapse collapse" aria-labelledby="vehicle-details-accordion__header-three" data-bs-parent="#vehicle-details-accordion">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                @foreach (var detail in detailsDict[DetailType.Entertainment][0])
+                                {
+                                    <li class="list-group-item">@detail.Description</li>
+                                }
+                            </ul>
+                            <ul class="list-group">
+                                @foreach (var detail in detailsDict[DetailType.Entertainment][1])
+                                {
+                                    <li class="list-group-item">@detail.Description</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="vehicle-details-accordion__header-four">
+                        <button class="accordion-button vehicle-detail-accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mechanical-collapse" aria-expanded="false" aria-controls="mechanical-collapse">
+                            Mechanical <i class="bi bi-gear ps-2"></i>
+                        </button>
+                    </h3>
+                    <div id="mechanical-collapse" class="accordion-collapse collapse" aria-labelledby="vehicle-details-accordion__header-four" data-bs-parent="#vehicle-details-accordion">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                @foreach (var detail in detailsDict[DetailType.Mechanical][0])
+                                {
+                                    <li class="list-group-item">@detail.Description</li>
+                                }
+                            </ul>
+                            <ul class="list-group">
+                                @foreach (var detail in detailsDict[DetailType.Mechanical][1])
+                                {
+                                    <li class="list-group-item">@detail.Description</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="vehicle-details-accordion__header-five">
+                        <button class="accordion-button vehicle-detail-accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#safety-collapse" aria-expanded="false" aria-controls="safety-collapse">
+                            Safety <i class="bi bi-shield-check ps-2"></i>
+                        </button>
+                    </h3>
+                    <div id="safety-collapse" class="accordion-collapse collapse" aria-labelledby="vehicle-details-accordion__header-five" data-bs-parent="#vehicle-details-accordion" ">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                @foreach (var detail in detailsDict[DetailType.Safety][0])
+                                {
+                                    <li class="list-group-item">@detail.Description</li>
+                                }
+                            </ul>
+                            <ul class="list-group">
+                                @foreach (var detail in detailsDict[DetailType.Safety][1])
+                                {
+                                    <li class="list-group-item">@detail.Description</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="vehicle-details-accordion__header-six">
+                        <button class="accordion-button vehicle-detail-accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#tech-specs-collapse" aria-expanded="false" aria-controls="tech-specs-collapse">
+                            Tech Specs <i class="bi bi-cpu ps-2"></i>
+                        </button>
+                    </h3>
+                    <div id="tech-specs-collapse" class="accordion-collapse collapse" aria-labelledby="vehicle-details-accordion__header-six" data-bs-parent="#vehicle-details-accordion">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                @foreach (var detail in detailsDict[DetailType.TechSpecs][0])
+                                {
+                                    <li class="list-group-item">@detail.Description</li>
+                                }
+                            </ul>
+                            <ul class="list-group">
+                                @foreach (var detail in detailsDict[DetailType.TechSpecs][1])
+                                {
+                                    <li class="list-group-item">@detail.Description</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>    
+</main>
+
+@section scripts {
+    <script>
+        class Workflow {
+            constructor() {
+                this.cacheDom();
+                this.initCarousel();
+                this.initEventListeners();
+            }
+
+            cacheDom() {
+                this._thumbnails = document.querySelectorAll(".vehicle-img-secondary-carousel__thumbnail");
+                this._vehicleCarousel = document.querySelector("#vehicle-img-main-carousel");
+                this._previousButton = document.querySelector(".carousel-control-prev");
+                this._nextButton = document.querySelector(".carousel-control-next");
+            }
+
+            initCarousel() {
+                this._carousel = new bootstrap.Carousel(this._vehicleCarousel);
+                this._carousel.cycle = false;
+            }
+
+            initEventListeners() {
+                this._thumbnails.forEach(t => t.addEventListener("click", e => {
+                    this._carousel.to(e.target.dataset.index);
+
+                    this._thumbnails.forEach(t => t.classList.remove("active"));
+                    e.target.classList.add("active");
+                }));
+
+                this._nextButton.addEventListener("click", e => {
+                    const activeImage = document.querySelector(".carousel-item.active > img");
+                    this.handleCarouselClick(activeImage, activeIndex => activeIndex + 1 < this._thumbnails.length ? activeIndex + 1 : 0);            
+                });
+
+                this._previousButton.addEventListener("click", e => {
+                    const activeImage = document.querySelector(".carousel-item.active > img");
+                    this.handleCarouselClick(activeImage, activeIndex => activeIndex - 1 >= 0 ? activeIndex - 1 : this._thumbnails.length - 1);
+                });
+            }
+
+            handleCarouselClick(activeImage, nextIndexSelector) {
+                const activeIndex = parseInt(activeImage.dataset.index);
+                const nextIndex = nextIndexSelector(activeIndex);
+                const nextThumbnail = document.querySelector(`img.img-thumbnail.vehicle-img-secondary-carousel__thumbnail[data-index='${nextIndex}']`);
+
+                this._thumbnails.forEach(t => t.classList.remove("active"));
+                nextThumbnail.classList.add("active");
+            }
+        }
+
+        const workflow = new Workflow();
+    </script>
+} 

@@ -1,0 +1,282 @@
+﻿@model GuildCars.UI.Models.EditVehicleViewModel
+
+@{
+    ViewBag.Title = "Edit Vehicle";
+    Layout = "~/Views/Shared/_LayoutNoNav.cshtml";
+}
+
+@section styles {
+    <link href="@Url.Content("~/Content/Admin.css" )" rel="stylesheet" />
+}
+
+<div class="container">
+
+    <h2 class="mb-lg-5">Edit Vehicle</h2>
+    @{
+        if (TempData.ContainsKey("EditVehicleSuccessMessage"))
+        {
+            <div class="alert alert-dismissible alert-success fade show" role="alert">
+                <strong>Success!</strong> @TempData["EditVehicleSuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        if (TempData.ContainsKey("EditVehicleFailureMessage"))
+        {
+            <div class="alert alert-dismissible alert-danger fade show" role="alert">
+                <strong>Failure!</strong> @TempData["EditVehicleFailureMessage"]
+                <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        <div class="alert alert-dismissible alert-danger fade show d-none failed-delete-container" role="alert">
+            <strong>Failure!</strong><span class="failed-delete-message"></span>
+            <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @using (Html.BeginForm("EditVehicle", "Admin", FormMethod.Post, new { id = "admin-vehicle__add-form", @class = "container", enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(v => v.Vehicle.Id)
+
+        <fieldset class="add-form__fieldset container">
+            <legend>Make and Model</legend>
+
+            <div class="add-form__input-group">
+                @{
+                    var makes = Model.MakesAndModels.Keys;
+                    var makeSelectList = new SelectList(makes, "Id", "Name");
+                }
+                <label for="make">Make:</label>
+                @Html.DropDownListFor(v => v.Vehicle.Model.MakeId, makeSelectList, new { @class = "form-select make-select", name = "make" })
+            </div>
+
+            <div class="add-form__input-group">
+                @{
+                    var modelTuples = Model.MakesAndModels[Model.Vehicle.Model.Make];
+                    var modelSelectList = new SelectList(modelTuples, "Id", "Name");
+                }
+                <label for="model">Model:</label>
+                @Html.DropDownListFor(v => v.Vehicle.ModelId, modelSelectList, new { @class = "form-select model-select", name = "model" })
+            </div>
+
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.TransmissionType)
+                @Html.DropDownListFor(v => v.Vehicle.TransmissionTypeId, Model.TransmissionTypes, new { @class = "form-control" })
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.BodyStyle)
+                @Html.DropDownListFor(v => v.Vehicle.BodyStyleId, Model.BodyStyles, new { @class = "form-control" })
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Engine)
+                @Html.TextBoxFor(v => v.Vehicle.Engine, new { @class = "form-control" })
+                @Html.ValidationMessageFor(v => v.Vehicle.Engine)
+            </div>
+        </fieldset>
+
+        <fieldset class="add-form__fieldset container">
+            <legend>Vehicle Details</legend>
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Year)
+                @Html.TextBoxFor(v => v.Vehicle.Year, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(v => v.Vehicle.Year)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Color)
+                @Html.TextBoxFor(v => v.Vehicle.Color, new { @class = "form-control" })
+                @Html.ValidationMessageFor(v => v.Vehicle.Color)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Interior)
+                @Html.TextBoxFor(v => v.Vehicle.Interior, new { @class = "form-control" })
+                @Html.ValidationMessageFor(v => v.Vehicle.Interior)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Mileage)
+                @Html.TextBoxFor(v => v.Vehicle.Mileage, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(v => v.Vehicle.Mileage)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.HighwayMpg)
+                @Html.TextBoxFor(v => v.Vehicle.HighwayMpg, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(v => v.Vehicle.HighwayMpg)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.CityMpg)
+                @Html.TextBoxFor(v => v.Vehicle.CityMpg, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(v => v.Vehicle.CityMpg)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.VIN)
+                @Html.TextBoxFor(v => v.Vehicle.VIN, new { @class = "form-control" })
+                @Html.ValidationMessageFor(v => v.Vehicle.VIN)
+            </div>
+        </fieldset>
+
+        <fieldset class="add-form__fieldset container">
+            <legend>Pricing Data</legend>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.MSRP)
+                @Html.TextBoxFor(v => v.Vehicle.MSRP, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(v => v.Vehicle.MSRP)
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.SalePrice)
+                @Html.TextBoxFor(v => v.Vehicle.SalePrice, new { @class = "form-control", @type = "number" })
+                @Html.ValidationMessageFor(v => v.Vehicle.SalePrice)
+            </div>
+        </fieldset>
+
+        <fieldset class="add-form__fieldset container">
+            <legend>Marketing Information</legend>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Details)
+                @Html.ListBoxFor(v => v.SelectedDetailIds, Model.Details, new { @class = "form-control", @multiple = true })
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.Description)
+                @Html.TextAreaFor(v => v.Vehicle.Description, new { @class = "form-control" })
+            </div>
+
+            <div class="add-form__input-group add-form__thumbnails">
+                <div>Existing Images <span class="text-danger ps-3">Click to Remove</span></div>
+                @foreach (var img in Model.Vehicle.ImagePaths)
+                {
+                    <label for="@img.Id" class="thumbnail-label"></label>
+                    <input type="checkbox"
+                           name="@Html.NameFor(m => m.ImagesToKeep)"
+                           value="@img.Path"
+                           id="@img.Id"
+                           class="form-control img-thumbnail thumbnails__thumbnail"
+                           checked
+                           style="background-image: url(@Url.Content("~/Images/Cars/" + img.Path)" />
+                }
+            </div>
+
+            <div class="add-form__input-group">
+                <label for="@Html.NameFor(v => v.ImageUploads)">Upload New Images</label>
+                <input id="@Html.IdFor(v => v.ImageUploads)" name="@Html.NameFor(v => v.ImageUploads)" type="file" multiple class="form-control" />
+            </div>
+
+            <div class="add-form__input-group">
+                @Html.LabelFor(v => v.Vehicle.IsNew)
+                @Html.CheckBoxFor(v => v.Vehicle.IsNew)
+                @Html.ValidationMessageFor(v => v.Vehicle.IsNew)
+            </div>
+        </fieldset>
+
+        <div class="edit-delete-btns">
+            <button type="submit" class="btn btn-primary add-form__save-btn">Edit Vehicle</button>
+            <button type="button" class="btn btn-danger add-form__delete-btn" data-bs-toggle="modal" data-bs-target="#confirm-delete__modal">Delete Vehicle</button>
+        </div>
+    }
+</div>
+
+<div class="modal fade" id="confirm-delete__modal" tabindex="-1" aria-labelledby="confirm-delete__title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirm-delete__title">Confirm Vehicle Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>You are about to delete @Model.Vehicle.VIN.</p>
+                <p>Are you sure you want to delete this vehicle?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger confirm-delete__delete-btn">Delete Vehicle</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        class Workflow {
+            constructor() {
+                this._selectedMake = null;
+                @{
+                    var makesAndModelsDictionary = new Dictionary<string, IList<GuildCars.Models.Model>>();
+                    foreach (var keyValue in Model.MakesAndModels)
+                    {
+                        makesAndModelsDictionary.Add(keyValue.Key.Id.ToString(), keyValue.Value);
+                    }
+                }
+                this._makesAndModels = @Html.Raw(Json.Encode(makesAndModelsDictionary));
+                this.cacheDom();
+                this.initEventListeners();
+            }
+
+            cacheDom() {
+                this._failedDeleteContainer = document.querySelector(".failed-delete-container");
+                this._failedDeleteMessage = document.querySelector(".failed-delete-message");
+                this._form = document.querySelector("#admin-vehicle__add-form");
+                this._makeSelect = document.querySelector(".make-select");
+                this._modelSelect = document.querySelector(".model-select");
+                this._thumbnails = document.querySelectorAll(".thumbnails__thumbnail");
+                this._deleteBtn = document.querySelector(".confirm-delete__delete-btn");
+            }
+
+            initEventListeners() {
+                this._makeSelect.addEventListener("change", e => {
+                    this._selectedMake = e.target.value;
+                    this.removeOptions();
+                    this.assembleModelSelect();
+                });
+
+                this._deleteBtn.addEventListener("click", async () => {
+                    const url = "https://localhost:44346/admin/deletevehicle/@Model.Vehicle.Id";
+                    try {
+                        const response = await fetch(url, { method: "POST" });
+                        if (response.ok) {
+                            const data = await response.json();
+
+                            if (data.DeleteVehicleSuccessMessage) {
+                                sessionStorage.setItem("DeleteVehicleSuccessMessage", data.DeleteVehicleSuccessMessage);
+                                window.location.href = "https://localhost:44346/admin/vehicles";
+                            }
+                            else if (data.DeleteVehicleFailureMessage) {
+                                this._failedDeleteMessage.textContent = data.DeleteVehicleFailureMessage;
+                                this._failedDeleteContainer.classList.remove("d-none");
+                            }
+                        }
+                    }
+                    catch {
+                        this._failedDeleteMessage.textContent = "Unable to delete vehicle.";
+                        this._failedDeleteContainer.classList.remove("d-none");
+                    }
+                });
+            }
+
+            assembleModelSelect() {
+                const availableModels = this._makesAndModels[this._selectedMake];
+                availableModels.forEach(m => {
+                    const option = document.createElement("option");
+                    option.value = m.Id;
+                    option.text = m.Name;
+                    this._modelSelect.append(option);
+                });
+            }
+
+            removeOptions() {
+                this._modelSelect.innerHTML = "";
+            }
+        }
+
+        const workflow = new Workflow();
+    </script>
+}
