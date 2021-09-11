@@ -38,7 +38,7 @@ The service layer follows a facade design pattern to prevent clients from direct
 containing the business logic are marked with internal access modifiers and only a few interfaces are provided for clients to utilize.
 
 The choice was made to encapsulate data access logic even though Entity Framework 6 was used. While the argument that Entity Framework itself is a repository and doesn't need further
-abstraction is valid, the benefits gained from seprating its use from the rest of the application outweighed the redundant abstraction.  This allowed for greater maintainability
+abstraction is valid, the benefits gained from separating its use from the rest of the application outweighed the redundant abstraction.  This allowed for greater maintainability
 and testability of the codebase.
 
 ## Features
