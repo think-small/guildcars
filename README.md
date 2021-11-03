@@ -5,6 +5,24 @@
 
 Car dealership web application to manage customer experiences, facilitate vehicle transactions, and track sale metrics.
 
+## Features
+#### Vehicle Transactions
+A primary requirement of the project is the ability to properly process the sale of vehicles. Supported payment methods needed to include cash sale, external bank finance, and dealer finance. Additionally, every type of sale needed to accommodate the possible inclusion of trade-in vehicles.  Every payment method would result in the generation of a purchase agreement as a pdf file. External bank finance options require the employee to upload a copy of the customer's approval letter from the financing institution. Dealer finance sales require the generation of an amortized repayment schedule.
+
+IronPdf was utilized for the creation of the purchase agreement. Content of the purchase agreement was built with an HTML string, and then converted using IronPdf's HtmlToPdf renderer. The implementation can be found in ```GuildCars.Services.ReceiptGeneratorService.IronPdfReceiptService.cs```.
+
+https://user-images.githubusercontent.com/36169446/140089203-7edde508-65f2-45da-a78c-13e5420944a3.mp4
+
+#### Viewing Inventory ####
+Any anonymous user is permitted to view the dealership's inventory. Users interact with a toolbar for dynamic filtering based on price, make, model, etc. Results are cached for improved performance. SessionStorage is utilized to persist the user's last chosen filter in order to retain their search results if they navigate away from the page.
+
+https://user-images.githubusercontent.com/36169446/140090255-bc8d7dcc-7a1c-40b5-9cbf-792b88572b4d.mp4
+
+#### Sales Dashboard ####
+Admins are provided a sales dashboard for quickly viewing recent transactions. ASP.NET WebApi was used for pulling some of the data required to populate the widgets. ASP.NET MVC PartialViews and Chart.JS were used for creation of the tables and charts.
+
+https://user-images.githubusercontent.com/36169446/140091656-9fab77fd-08dc-477f-bb1c-6385ee4ecac7.mp4
+
 ## Installation
 ```
 git clone https://github.com/think-small/guildcars.git
@@ -43,9 +61,3 @@ The service layer follows a facade design pattern to prevent clients from direct
 containing the business logic are marked with internal access modifiers and only a few interfaces are provided for clients to utilize.
 
 The choice was made to encapsulate data access logic even though Entity Framework 6 was used. While the argument that Entity Framework itself is a repository and doesn't need further abstraction is valid, the benefits gained from separating its use from the rest of the application outweighed the redundant abstraction.  This allowed for greater maintainability and testability of the codebase.
-
-## Features
-#### Vehicle Transactions
-A primary requirement of the project is the ability to properly process the sale of vehicles. Supported payment methods needed to include cash sale, external bank finance, and dealer finance. Additionally, every type of sale needed to accommodate the possible inclusion of trade-in vehicles.  Every payment method would result in the generation of a purchase agreement as a pdf file. External bank finance options require the employee to upload a copy of the customer's approval letter from the financing institution. Dealer finance sales require the generation of an amortized repayment schedule.
-
-IronPdf was utilized for the creation of the purchase agreement. Content of the purchase agreement was built with an HTML string, and then converted using IronPdf's HtmlToPdf renderer. The implementation can be found in ```GuildCars.Services.ReceiptGeneratorService.IronPdfReceiptService.cs```.
